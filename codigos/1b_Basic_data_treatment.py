@@ -8,6 +8,12 @@
 import numpy as np
 import pandas as pd
 
+# NOTE : Most of the code works with arrays; if you want to convert them to dataframes, you cand do using 'pd.DataFrame(array)' where array is the array to convert. It depends on what you want to do. There's an example on the line 
+
+
+# NOTE : There are other ways to achieve some results, for example if you want to use your own function to repeat an array (without using '*' to multiply arrays) check out Appendix 1 (line 143)
+
+
 # 1. Categories (in R, these are factors) [https://pandas.pydata.org/docs/user_guide/categorical.html]
 
 # Convert data to category
@@ -82,20 +88,77 @@ print(m_ordered)
 
 # 2.2 We use vstack() to manipulate rows
 
-ma = np.vstack([ [1] * 3, [1,2,3] ]) # in this case [ , ] indicates the rows
+ma = np.vstack([ [1] * 3, [1,2,3] ])# in this case [ , ] indicates the rows
 print(ma)
-
 ma_extended = np.column_stack([ [0] * 2 , ma ]) # a column of zeros is added to ma
 print(ma_extended)
 
 
-# There are other ways to achieve the result, but, for example if you want to use your own function to repeat an array (without using 'np.resize') check out Appendix 1 
+# 2.3 We use 'pd.DataFrame()' to have dataframes
+
+# If you want to convert an array into dataframe and want to rename its rows and columns :
+ma_ext_df = pd.DataFrame(ma_extended, index = ["a", "b"])
+print(ma_ext_df)
+result = pd.concat([ pd.Series([0,0], index = ["a", "b"], name="I"), ma_ext_df ], axis = 1)
+result.columns = ["I"] + [f"X{i}" for i in range(ma_ext_df.shape[1])]
+print(result)
 
 
+# 3. Combine dataframes with merge (https://pandas.pydata.org/docs/user_guide/merging.html)
+
+# First we need our dataframes
+
+df1 = pd.DataFrame({
+    "Id": range(1,7),
+    "Product": ["Oven"]*3 + ["Television"]*3
+})
+print(df1)
+
+df2 = pd.DataFrame({
+    "Id": [2,4,6,7,8],
+    "City": ["Amsterdan"]*2 + ["Utrecht"]*3
+})
+print(df2)
+
+# To combine by intersection (inner join)
+print(pd.merge(df1,df2, on="Id", how="inner"))
+
+# To combine by union
+print(pd.merge(df1,df2, on="Id", how="outer"))
+
+# Combine keeping all the data from the first data frame
+print(pd.merge(df1,df2,on="Id", how="left"))
+
+# Combine keeping all the data from the second data frame
+print(pd.merge(df1,df2,on="Id", how="right"))
+
+# Cross join or Cartesian product : each row from a table is joined with each row of the other table
+print(pd.merge(df1,df2,how="cross"))
+ 
+# OBSERVE AND COMMENT ON THE DIFFERENCES BETWEEN THE DIFFERENT WAYS OF COMBINED DATA FRAMES
 
 
-# APPENDIXES
+# --------------------------------------------------------------------
 
+# APPENDIX 1
 
+def recycle(a,n):
+    """Receives an array 'a' and a length'n'
+    Reproduces the R vector recycling function up to lenght n.
+    """
+    a = np.asarray(a)
+    return np.resize(a,n)
 
+# The examples are : 
+exmpl = ["Ann"] * 9 
+exmpl_func = recycle(["Ann"], 9)
 
+# It is important to note that these expresssions are different :
+exmpl2 = ["Algebra"] * 3 + ["Calculus"] * 3 + ["Probability"] * 4
+exmpl2_diff = recycle(["Algebra", "Calculus", "Probability"] , 10)
+
+'''
+Writing functions is important because it allows us to organize, reuse, and simplify code. 
+Instead of repeating a block of instructions multiple times, we encapsulate it in a single function with a descriptive name, which prevents redundancy and makes it easier to make future changes from a single location. 
+Additionally, it breaks down a complex problem into smaller, easier-to-understand parts, improving the readability and maintainability of any project.
+'''
