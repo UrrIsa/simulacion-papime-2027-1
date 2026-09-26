@@ -61,9 +61,53 @@ Flights_ex_A = Flights_ex[~(Flights_ex["flight_direction"] == "D")]
 
 
 #Select only usefull columns: departing flights do not have landing time, arriving flights do not have take off times
-Flight_ex_A = Flights_ex_A.iloc[:,[0,3,4,5,6,7,8]]
-Flight_ex_D = Flights_ex_D.iloc[:,[0,3,4,5,6,7,9]]
+Flights_ex_A = Flights_ex_A.iloc[:,[0,3,4,5,6,7,8]]
+Flights_ex_D = Flights_ex_D.iloc[:,[0,3,4,5,6,7,9]]
 # In pandas, indices start at 0
+
+
+# 3. Determine taxi-time
+Flights_ex_A["taxi_in"] = Flights_ex_A["actual_block_time"] - Flights_ex_A["actual_landing_time"]
+Flights_ex_D["taxi_out"] = Flights_ex_D["actual_take_off_time"] - Flights_ex_D["actual_block_time"]
+
+# 4. Basic statistics
+
+# Maximun and minimun
+Flights_ex_A["taxi_in"].max()
+Flights_ex_A["taxi_in"].idxmax()
+Flights_ex_A["id_ciss"][Flights_ex_A["taxi_in"].idxmax()]
+Flights_ex_A["aircraft_iata_main"][Flights_ex_A["taxi_in"].idxmax()]
+
+# Average
+print(Flights_ex_A["taxi_in"].mean())
+
+# Median
+print(Flights_ex_A["taxi_in"].median())
+print(Flights_ex_A["taxi_in"].quantile(0.5))
+
+# Mode
+frec = Flights_ex_A["taxi_in"].value_counts()
+frec_ord = frec.sort_values(ascending = False)
+print(frec_ord)
+mode = frec_ord.index[0]
+
+# Variance
+taxi_in_var_seconds = Flights_ex_A["taxi_in"].dt.total_seconds().var()
+# print(taxi_in_var_seconds)
+
+# Standar deviation
+Flights_ex_A["taxi_in"].std()
+
+# Generate different statistics at the same time
+Flights_ex_A["taxi_in"].describe()
+
+# Retrieves the working directory, to know where I will save the file
+os.getcwd()
+
+# Write the resulting files
+Flights_ex_A.to_csv("Flight_ex_A.csv", index = False)
+Flights_ex_D.to_csv("Flight_ex_D.csv", index = False)
+
 
 
 
