@@ -8,7 +8,7 @@ import numpy as np
 # Retrieves the working directory, to know where I will save the file
 os.getcwd()
 #os.chdir("/Users/tu_usuario/Desktop") # An example. The 'os.chdir' is used to change the current working directory
-os.chdir("/home/urrisaac/Profesional/GIT/")
+os.chdir("/Users/tu_usuario/Desktop")
 
 Flights_ex = pd.read_csv("1c flights.csv")
 
@@ -105,8 +105,8 @@ Flights_ex_A["taxi_in"].describe()
 os.getcwd()
 
 # Write the resulting files
-Flights_ex_A.to_csv("Flight_ex_A.csv", index = False)
-Flights_ex_D.to_csv("Flight_ex_D.csv", index = False)
+Flights_ex_A.to_csv("Flights_ex_A.csv", index = False)
+Flights_ex_D.to_csv("Flights_ex_D.csv", index = False)
 
 
 
